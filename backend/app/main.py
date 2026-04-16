@@ -6,7 +6,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import auth, sessions, users
 from app.core.config import settings
+from app.db import AsyncSessionLocal, engine
 from app.firewall.manager import FirewallManager
+from app.models.db_models import Base
 from app.services.user_service import UserService
 from app.workers.cleanup import cleanup_worker
 
@@ -18,10 +20,15 @@ worker_task: asyncio.Task | None = None
 async def lifespan(_: FastAPI):
     global worker_task
 
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
     fw = FirewallManager()
     await fw.bootstrap()
     await fw.startup_cleanup()
-    await UserService.init_admin()
+
+    async with AsyncSessionLocal() as db:
+        await UserService.init_admin(db)
 
     worker_task = asyncio.create_task(cleanup_worker(cleanup_stop_event))
     yield

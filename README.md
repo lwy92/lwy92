@@ -7,6 +7,7 @@
 - ✅ 用户认证（JWT）
 - ✅ 登录自动放行 IP + 指定端口（SSH/HTTP 等）
 - ✅ Redis Session + TTL，超时自动清理
+- ✅ PostgreSQL 用户与上下线日志持久化
 - ✅ 多用户、多 IP 并发会话
 - ✅ 手动下线（踢出）
 - ✅ 查看当前白名单会话/IP
@@ -18,7 +19,7 @@
 
 - **安全取 IP**：默认使用 `request.client.host`，仅在 `TRUST_X_FORWARDED_FOR=true` 且来源在 `TRUSTED_PROXIES` 时信任 `X-Forwarded-For`。
 - **防暴力破解**：登录接口启用限流（`10/minute`，可配置）。
-- **审计日志**：会话创建/终止写入 Redis 审计流。
+- **审计日志**：会话创建/终止写入 Redis 审计流，同时用户上下线写入 PostgreSQL。
 - **RBAC 预留**：用户对象含 `is_admin`，后续可扩展 role/permission 模型。
 
 ## 项目结构
@@ -82,6 +83,7 @@ authwall/
 | 变量 | 默认值 | 说明 |
 | --- | --- | --- |
 | `REDIS_URL` | `redis://redis:6379/0` | Redis 地址 |
+| `DATABASE_URL` | `postgresql+asyncpg://postgres:postgres@postgres:5432/authwall` | PostgreSQL 连接串 |
 | `SECRET_KEY` | `change-me-in-production` | JWT 密钥 |
 | `ACCESS_TOKEN_EXPIRE_MINUTES` | `30` | 会话有效期 |
 | `TRUST_X_FORWARDED_FOR` | `false` | 是否信任代理头 |
@@ -98,6 +100,9 @@ authwall/
 - `DELETE /api/v1/sessions/{session_id}` 手动下线
 - `GET /api/v1/users` 管理员查看用户
 - `POST /api/v1/users` 管理员创建用户
+- `PATCH /api/v1/users/{username}` 管理员更新用户
+- `DELETE /api/v1/users/{username}` 管理员删除用户
+- `GET /api/v1/users/session-logs` 管理员查看用户上下线日志
 
 ## CLI 示例
 
