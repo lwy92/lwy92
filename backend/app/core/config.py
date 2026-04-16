@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 30
 
     redis_url: str = 'redis://redis:6379/0'
+    database_url: str = 'postgresql+asyncpg://postgres:postgres@postgres:5432/authwall'
 
     trusted_proxies: str = '127.0.0.1,::1'
     trust_x_forwarded_for: bool = False

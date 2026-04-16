@@ -5,16 +5,29 @@ services:
     ports:
       - '6379:6379'
 
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: authwall
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
   backend:
     build:
       context: ../backend
     privileged: true
     environment:
       REDIS_URL: redis://redis:6379/0
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@postgres:5432/authwall
       FIREWALL_DRY_RUN: 'true'
       TRUST_X_FORWARDED_FOR: 'false'
     depends_on:
       - redis
+      - postgres
     ports:
       - '8000:8000'
 
@@ -25,3 +38,6 @@ services:
       - '5173:80'
     depends_on:
       - backend
+
+volumes:
+  postgres_data:
