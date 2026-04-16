@@ -17,13 +17,10 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession
         detail='Could not validate credentials',
         headers={'WWW-Authenticate': 'Bearer'},
     )
-    try:
-        payload = jwt.decode(token, settings.secret_key, algorithms=[settings.jwt_algorithm])
-        username = payload.get('sub')
-        if not username:
-            raise credentials_exception
-    except JWTError as exc:
-        raise credentials_exception from exc
+
+    username = await AccessTokenService.get_subject(token)
+    if not username:
+        raise credentials_exception
 
     user = await UserService.get_user(db, username)
     if not user:

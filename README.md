@@ -4,7 +4,7 @@
 
 ## 核心能力
 
-- ✅ 用户认证（JWT）
+- ✅ 用户认证（随机令牌 + Redis）
 - ✅ 登录自动放行 IP + 指定端口（SSH/HTTP 等）
 - ✅ Redis Session + TTL，超时自动清理
 - ✅ PostgreSQL 用户与上下线日志持久化
@@ -111,7 +111,7 @@ cd cli
 pip install -e .
 
 authwall-cli sessions --base-url http://localhost:8000
-authwall-cli force-offline <session_id> --token <jwt>
+authwall-cli force-offline <session_id> --token <access_token>
 ```
 
 ## 默认账号

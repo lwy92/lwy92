@@ -6,8 +6,6 @@ class Settings(BaseSettings):
 
     app_name: str = 'authwall'
     env: str = 'dev'
-    secret_key: str = 'change-me-in-production'
-    jwt_algorithm: str = 'HS256'
     access_token_expire_minutes: int = 30
 
     redis_url: str = 'redis://redis:6379/0'
