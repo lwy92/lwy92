@@ -4,7 +4,7 @@
 
 ## 核心能力
 
-- ✅ 用户认证（JWT）
+- ✅ 用户认证（随机令牌 + Redis）
 - ✅ 登录自动放行 IP + 指定端口（SSH/HTTP 等）
 - ✅ Redis Session + TTL，超时自动清理
 - ✅ 多用户、多 IP 并发会话
@@ -82,7 +82,6 @@ authwall/
 | 变量 | 默认值 | 说明 |
 | --- | --- | --- |
 | `REDIS_URL` | `redis://redis:6379/0` | Redis 地址 |
-| `SECRET_KEY` | `change-me-in-production` | JWT 密钥 |
 | `ACCESS_TOKEN_EXPIRE_MINUTES` | `30` | 会话有效期 |
 | `TRUST_X_FORWARDED_FOR` | `false` | 是否信任代理头 |
 | `TRUSTED_PROXIES` | `127.0.0.1,::1` | 可信代理列表 |
@@ -106,7 +105,7 @@ cd cli
 pip install -e .
 
 authwall-cli sessions --base-url http://localhost:8000
-authwall-cli force-offline <session_id> --token <jwt>
+authwall-cli force-offline <session_id> --token <access_token>
 ```
 
 ## 默认账号
