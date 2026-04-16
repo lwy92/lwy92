@@ -1,8 +1,7 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError, jwt
 
-from app.core.config import settings
+from app.core.security import AccessTokenService
 from app.services.user_service import UserService
 
 
@@ -15,13 +14,10 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> dict:
         detail='Could not validate credentials',
         headers={'WWW-Authenticate': 'Bearer'},
     )
-    try:
-        payload = jwt.decode(token, settings.secret_key, algorithms=[settings.jwt_algorithm])
-        username = payload.get('sub')
-        if not username:
-            raise credentials_exception
-    except JWTError as exc:
-        raise credentials_exception from exc
+
+    username = await AccessTokenService.get_subject(token)
+    if not username:
+        raise credentials_exception
 
     user = await UserService.get_user(username)
     if not user:
