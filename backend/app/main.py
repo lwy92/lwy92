@@ -1,6 +1,7 @@
 import asyncio
 from contextlib import asynccontextmanager
 
+import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -30,6 +31,7 @@ async def lifespan(_: FastAPI):
     async with AsyncSessionLocal() as db:
         await UserService.init_admin(db)
 
+
     worker_task = asyncio.create_task(cleanup_worker(cleanup_stop_event))
     yield
 
@@ -54,3 +56,12 @@ app.include_router(users.router, prefix='/api/v1')
 @app.get('/healthz')
 async def healthz() -> dict:
     return {'status': 'ok'}
+
+
+if __name__ == "__main__":
+    uvicorn.run(
+        "app.main:app",
+        host="127.0.0.1",
+        port=8000,
+        reload=True
+    )

@@ -6,7 +6,7 @@ from slowapi.util import get_remote_address
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
-from app.core.security import create_access_token, verify_password
+from app.core.security import verify_password, AccessTokenService
 from app.db import get_db_session
 from app.schemas.auth import LoginRequest, TokenResponse
 from app.services.session_service import SessionService
@@ -26,7 +26,10 @@ async def login(request: Request, payload: LoginRequest, db: AsyncSession = Depe
 
     ip = get_client_ip(request)
     session_id, _ = await SessionService.create_session(user['username'], ip, payload.ports, db=db)
-    token = create_access_token(subject=user['username'], expires_delta=timedelta(minutes=settings.access_token_expire_minutes))
+    token = await AccessTokenService.create_access_token(
+        subject=user['username'],
+        expires_delta=timedelta(minutes=settings.access_token_expire_minutes),
+    )
     return TokenResponse(access_token=token, session_id=session_id, ip=ip)
 
 
