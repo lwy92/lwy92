@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from gradio import mount_gradio_app
 
 from app.api import auth, sessions, users
 from app.core.config import settings
@@ -11,6 +12,7 @@ from app.db import AsyncSessionLocal, engine
 from app.firewall.manager import FirewallManager
 from app.models.db_models import Base
 from app.services.user_service import UserService
+from app.ui.gradio_app import build_gradio_app
 from app.workers.cleanup import cleanup_worker
 
 cleanup_stop_event = asyncio.Event()
@@ -31,7 +33,6 @@ async def lifespan(_: FastAPI):
     async with AsyncSessionLocal() as db:
         await UserService.init_admin(db)
 
-
     worker_task = asyncio.create_task(cleanup_worker(cleanup_stop_event))
     yield
 
@@ -48,9 +49,12 @@ app.add_middleware(
     allow_headers=['*'],
 )
 
-app.include_router(auth.router, prefix='/api/v1')
-app.include_router(sessions.router, prefix='/api/v1')
-app.include_router(users.router, prefix='/api/v1')
+api_prefix = f"{settings.secure_entry_path.rstrip('/')}/api/v1"
+app.include_router(auth.router, prefix=api_prefix)
+app.include_router(sessions.router, prefix=api_prefix)
+app.include_router(users.router, prefix=api_prefix)
+
+app = mount_gradio_app(app, build_gradio_app(), path=settings.secure_entry_path)
 
 
 @app.get('/healthz')

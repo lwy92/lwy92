@@ -25,19 +25,13 @@ services:
       DATABASE_URL: postgresql+asyncpg://postgres:postgres@postgres:5432/authwall
       FIREWALL_DRY_RUN: 'true'
       TRUST_X_FORWARDED_FOR: 'false'
+      SECURE_ENTRY_PATH: /secure
+      SECURE_ENTRY_KEY: ''
     depends_on:
       - redis
       - postgres
     ports:
       - '8000:8000'
-
-  frontend:
-    build:
-      context: ../frontend
-    ports:
-      - '5173:80'
-    depends_on:
-      - backend
 
 volumes:
   postgres_data:
