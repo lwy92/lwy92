@@ -21,5 +21,8 @@ class Settings(BaseSettings):
     cleanup_interval_seconds: int = 5
     login_rate_limit: str = '10/minute'
 
+    secure_entry_path: str = '/secure'
+    secure_entry_key: str = ''
+
 
 settings = Settings()
