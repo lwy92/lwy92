@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     trusted_proxies: str = '127.0.0.1,::1'
     trust_x_forwarded_for: bool = False
 
-    firewall_backend: str = 'iptables'  # iptables | nftables | firewalld
+    firewall_backend: str = 'iptables'  # iptables | nftables | firewalld | windows
     firewall_chain: str = 'AUTHWALL_CHAIN'
     firewall_dry_run: bool = False
 
