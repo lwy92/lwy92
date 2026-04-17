@@ -61,6 +61,7 @@ authwall/
 - **iptables**：使用 `AUTHWALL_CHAIN`（可配置）独立链。
 - **nftables**：使用 `inet authwall` 表与 `input` 链。
 - **firewalld**：使用 rich-rule。
+- **Windows 防火墙**：使用 `netsh advfirewall` 动态添加/删除规则。
 - 系统启动执行链清理，避免残留规则污染。
 - 操作幂等：重复加入/删除不会导致业务失败。
 
@@ -88,7 +89,7 @@ authwall/
 | `ACCESS_TOKEN_EXPIRE_MINUTES` | `30` | 会话有效期 |
 | `TRUST_X_FORWARDED_FOR` | `false` | 是否信任代理头 |
 | `TRUSTED_PROXIES` | `127.0.0.1,::1` | 可信代理列表 |
-| `FIREWALL_BACKEND` | `iptables` | 防火墙后端 |
+| `FIREWALL_BACKEND` | `iptables` | 防火墙后端（`iptables` / `nftables` / `firewalld` / `windows`） |
 | `FIREWALL_CHAIN` | `AUTHWALL_CHAIN` | 独立链名称 |
 | `FIREWALL_DRY_RUN` | `false` | 调试模式，不执行系统命令 |
 
